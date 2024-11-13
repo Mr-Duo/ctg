@@ -1,0 +1,11 @@
+services:
+  ctg:
+    container_name: ctg
+    image: ctg:1.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
+    stdin_open: true
+    tty: true
