@@ -40,7 +40,7 @@ ENV PATH="/opt/java/openlogic-openjdk-11.0.24+8-linux-x64/bin:${PATH}"
 
 # Add Joern to PATH
 RUN unzip joern-cli.zip -d /opt/joern
-ENV PATH="/opt/joern:${PATH}"
+ENV PATH="/opt/joern/joern-cli:${PATH}"
 
 # Verify Joern installation
 # RUN joern --version
