@@ -17,7 +17,7 @@ def run_joern(file_path: str, output_dir: str):
     logger.info(f"Exporting joern graph from [{file_path}]")
     mkdir_if_not_exist(output_dir)
     
-    workspace_name = str(get_current_timestamp()) + "__" + "__".join(file_path.rsplit("___", 1)[1].split("/")[1:])
+    workspace_name = str(get_current_timestamp()) + "__" + "__".join(file_path)
 
     params = f"filepath={file_path},outputDir={output_dir},workspaceName={workspace_name}"
     command = f"joern --script {JOERN_SCRIPT_PATH} --params='{params}'"
