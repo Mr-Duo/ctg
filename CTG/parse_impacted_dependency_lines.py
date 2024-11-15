@@ -29,7 +29,6 @@ def main():
         run_finding_impacted_dependence_lines(repo_dir, commit_ids)
         # break
 
-
 def run_finding_impacted_dependence_lines(repo_dir, commit_ids):
     repo_name = get_file_name(repo_dir)
     # repo_obj = Repo(repo_dir)
