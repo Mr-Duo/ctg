@@ -180,8 +180,12 @@ def get_commit_data(repo_dir, commit_id, extract_level="function", fx_id = None 
         # lines_bl = list()
         # if blame is not None and me.new_path in blame.keys():
         #     lines_bl = blame[me.new_path]
+        if not hasattr(me, 'modified_deleted_in_function') or not hasattr(me, 'modified_add_in_function'):
+            return list()
+            
         functions = set(
-            [*me.modified_deleted_in_function] + [*me.modified_add_in_function])
+            [*me.modified_deleted_in_function] + [*me.modified_add_in_function]
+        )
         for idx, func in enumerate(functions):
             # line_bl = list()
             function_after = None
