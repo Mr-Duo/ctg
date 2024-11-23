@@ -9,7 +9,7 @@ class ModifierExtractor():
 
     def __init__(self, modified, commit_id, source_file=True):
         self.modified = modified
-        if modified.nloc > 10000:
+        if modified.nloc is None or modified.nloc > 10000:
             return
         self.diff = self.get_diff()
         self.old_path = self.modified.old_path
@@ -18,15 +18,11 @@ class ModifierExtractor():
         self.raw_code_before = self.get_raw_code_before()
         self.raw_code_after = self.get_raw_code_after()
         self.commit_id = commit_id
-        self.comments_after = parse_comments_text(
-            f"{commit_id}_after_{self.modified.filename}".replace(" ", ""), self.raw_code_after)
-        self.comments_before = parse_comments_text(
-            f"{commit_id}_before_{self.modified.filename}".replace(" ", ""), self.raw_code_before)
+        self.comments_after = parse_comments_text(f"{commit_id}_after_{self.modified.filename}".replace(" ", ""), self.raw_code_after)
+        self.comments_before = parse_comments_text(f"{commit_id}_before_{self.modified.filename}".replace(" ", ""), self.raw_code_before)
 
-        self.modified_added = [el[0] for el in self.modified.diff_parsed["added"]
-                               if self.filter_comment(el[0], self.comments_after) and len(el[1].strip()) > 0]
-        self.modified_deleted = [el[0] for el in self.modified.diff_parsed["deleted"]
-                                 if self.filter_comment(el[0], self.comments_before) and len(el[1].strip()) > 0]
+        self.modified_added = [el[0] for el in self.modified.diff_parsed["added"] if self.filter_comment(el[0], self.comments_after) and len(el[1].strip()) > 0]
+        self.modified_deleted = [el[0] for el in self.modified.diff_parsed["deleted"] if self.filter_comment(el[0], self.comments_before) and len(el[1].strip()) > 0]
 
         if not source_file:
             return

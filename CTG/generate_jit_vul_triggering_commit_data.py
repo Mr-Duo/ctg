@@ -109,8 +109,7 @@ def main():
     #     continue
     df_extracted_data = extract_info(repo_dir, list_commit_ids)
     total_cm += len(list_commit_ids)
-    path_to_save_csv = join_path(
-        PROJECT_EXTRACT_OUTPUTS_DIR, f"{repo_name}_{extract_level}_{extract_type}.csv")
+    path_to_save_csv = join_path(PROJECT_EXTRACT_OUTPUTS_DIR, f"{repo_name}_{extract_level}_{extract_type}.csv")
 
     df_extracted_data.to_csv(path_to_save_csv, index=False)
     logger.info(f"Extracted : {total_cm} commit")

@@ -60,6 +60,7 @@ def main():
     commits = set(datax["commit_id"])
     size = len(commits)
     print(size)
+    
     for cm_id in list(commits)[::1]:
         count += 1
         # continue
@@ -76,12 +77,7 @@ def main():
             after_output_file_name = f"after.{idx}"
             before = row[code_before]
             after = row[code_after]
-            # if 'line_bl' in row: 
-            #     bl =  row['line_bl']
-            #     if isinstance(bl,str):
-            #         bl_path = join_path(output_file_dir,f"blame.{idx}.txt")
-            #         if not is_path_exist(bl_path):
-            #             write_file(bl_path,bl)
+
             if is_path_exist(join_path(output_file_dir,f"{after_output_file_name}.cpp.edges.json")):
                 continue
             if REFACTOR:
@@ -108,12 +104,7 @@ def main():
             c += 1
             before_output_file_name = f"before.{idx}"
             after_output_file_name = f"after.{idx}"
-            # if 'line_bl' in row: 
-            #     bl =  row['line_bl']
-            #     if isinstance(bl,str):
-            #         bl_path = join_path(output_file_dir,f"blame.{idx}.txt")
-            #         if not is_path_exist(bl_path):
-            #             write_file(bl_path,bl)
+
             if REFACTOR:
                 before = refector_text(before)
                 after = refector_text(after)
