@@ -18,16 +18,25 @@ logger = get_logger(__name__)
 
 
 def main():
-    df = pd.read_csv(FIXING_COMMIT_FILE_PATH)
-    grouped_commits_by_repo = df.groupby("project")["commit_id"].apply(list)
-    for project_name, commit_ids in grouped_commits_by_repo.iteritems():
-        repo_dir = get_cloned_repository(project_name)
-        try:
-            lock_dir(repo_dir)
-        except BlockingIOError as e:
-            continue
-        run_finding_impacted_dependence_lines(repo_dir, commit_ids)
-        # break
+    # df = pd.read_csv(FIXING_COMMIT_FILE_PATH)
+    df = pd.read_json(FIXING_COMMIT_FILE_PATH, lines=True)
+    # grouped_commits_by_repo = df["commit_id"].apply(list)
+    # for project_name, commit_ids in grouped_commits_by_repo.iteritems():
+    commit_ids = df["commit_id"].to_list()    
+    repo_dir = get_cloned_repository("FFmpeg")
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--begin", type=int)
+    parser.add_argument("--end", type=int)
+    p = parser.parse_args()
+    
+    commit_ids = commit_ids[p.begin:p.end]
+    # try:
+    #     lock_dir(repo_dir)
+    # except BlockingIOError as e:
+    #     continue
+    run_finding_impacted_dependence_lines(repo_dir, commit_ids)
+    # break
 
 def run_finding_impacted_dependence_lines(repo_dir, commit_ids):
     repo_name = get_file_name(repo_dir)

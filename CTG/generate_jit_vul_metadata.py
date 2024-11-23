@@ -20,7 +20,7 @@ from pyszz.extract.commit_extractor import CommitExtractor
 
 logger = get_logger(__name__)
 
-JIT_VUL_CONTRIBUTING_COMMIT_DATA_FILE = "vul_contributing_commit_data.jsonl.1667660526"
+JIT_VUL_CONTRIBUTING_COMMIT_DATA_FILE = "vul_contributing_commit_data.jsonl.1732161689"
 JIT_VUL_CONTRIBUTING_COMMIT_DATA_PATH = join_path(
     JIT_VUL_DATA_DIR, JIT_VUL_CONTRIBUTING_COMMIT_DATA_FILE)
 
@@ -50,10 +50,10 @@ def main():
                 grouped_commits_by_repo[data["repo_name"]].add(vtc_id)
     for repo_name, list_commit_ids in grouped_commits_by_repo.items():
         repo_dir = get_cloned_repository(repo_name)
-        try:
-            lock_dir(repo_dir)
-        except BlockingIOError as e:
-            continue
+        # try:
+        #     lock_dir(repo_dir)
+        # except BlockingIOError as e:
+        #     continue
         df_extracted_data = extract_info(
             repo_dir, set(list_commit_ids))
         if df_extracted_data is None:

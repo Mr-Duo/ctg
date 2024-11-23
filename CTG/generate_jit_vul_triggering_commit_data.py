@@ -15,7 +15,7 @@ from pyszz.extract.commit_extractor import CommitExtractor
 
 logger = get_logger(__name__)
 
-JIT_VUL_CONTRIBUTING_COMMIT_DATA_FILE = "vul_contributing_commit_data.jsonl.1667660526"
+JIT_VUL_CONTRIBUTING_COMMIT_DATA_FILE = "vul_contributing_commit_data.jsonl.1732161689"
 JIT_VUL_CONTRIBUTING_COMMIT_DATA_PATH = join_path(
     JIT_VUL_DATA_DIR, JIT_VUL_CONTRIBUTING_COMMIT_DATA_FILE)
 
@@ -79,10 +79,10 @@ def main():
         repo_dir = get_cloned_repository(repo_name)
         if repo_name == "chromium___chromium":
             continue
-        try:
-            lock_dir(repo_dir)
-        except BlockingIOError as e:
-            continue
+        # try:
+        #     lock_dir(repo_dir)
+        # except BlockingIOError as e:
+        #     continue
         df_extracted_data = extract_info(
             repo_dir, list_commit_ids)
         total_cm += len(df_extracted_data.groupby("commit_id"))

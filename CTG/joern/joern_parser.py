@@ -1,8 +1,9 @@
 from config import BASE_DIR
 from file_manager import get_outer_dir, join_path, is_path_exist, mkdir_if_not_exist, get_file_name, remove_dir, unlink, write_file
 from helpers import get_logger, subprocess_cmd, get_current_timestamp, encode_special_characters_with_html_rules
-
+import os
 CURRENT_DIR = get_outer_dir(__file__)
+JOERN_IMPORT_PATH = join_path(CURRENT_DIR, "joern_scripts", "import_code.scala")
 JOERN_SCRIPT_PATH = join_path(CURRENT_DIR, "joern_scripts", "get_func_graph.scala")
 JOERN_SCRIPT_FUNCTION_PATH = join_path(CURRENT_DIR, "joern_scripts", "get_func_graph_parse_function.scala")
 logger = get_logger(__name__)
@@ -17,9 +18,11 @@ def run_joern(file_path: str, output_dir: str):
     logger.info(f"Exporting joern graph from [{file_path}]")
     mkdir_if_not_exist(output_dir)
     
-    workspace_name = str(get_current_timestamp()) + "__" + "__".join(file_path)
-
+    workspace_name = str(get_current_timestamp()) + "__" + "__".join(file_path.split('/'))
     params = f"filepath={file_path},outputDir={output_dir},workspaceName={workspace_name}"
+    command = f"joern --script {JOERN_IMPORT_PATH} --params='{params}'"
+    stdout, stderr = subprocess_cmd(command)
+
     command = f"joern --script {JOERN_SCRIPT_PATH} --params='{params}'"
     print(command)
     logger.debug(command)
@@ -28,7 +31,7 @@ def run_joern(file_path: str, output_dir: str):
         logger.warning(f"[{file_path}]{stderr}")
 
     workspace_dir = join_path(BASE_DIR, "workspace", encode_special_characters_with_html_rules(workspace_name))
-    # logger.info(f"Removing {workspace_dir}")
+    logger.info(f"Removing {workspace_dir}")
     try:
         remove_dir(workspace_dir)
     except Exception as e:
@@ -55,6 +58,10 @@ def run_joern_text(function_text, output_dir, fileName = ""):
     mkdir_if_not_exist(output_dir)
     logger.info(f"Exporting joern graph [{output_dir}]")
     params = f"filepath={tmp_file},outputDir={output_dir},workspaceName={workspace_name}"
+    
+    command = f"joern --script {JOERN_IMPORT_PATH} --params='{params}'"
+    stdout, stderr = subprocess_cmd(command)
+    
     command = f"joern --script {JOERN_SCRIPT_FUNCTION_PATH} --params='{params}'"
     logger.debug(command)
     stdout, stderr = subprocess_cmd(command)
