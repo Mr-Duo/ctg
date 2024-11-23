@@ -30,8 +30,8 @@ def main():
     parser.add_argument("--project", type=str)
     p = parser.parse_args()
     
-    if p.file == "vtc":
-        FILE = join_path(RAW_COMMIT_DATA_DIR, "VTC.jsonl")
+    if p.file == "vic":
+        FILE = join_path(RAW_COMMIT_DATA_DIR, "VIC.jsonl")
     elif p.file == "vfc":
         FILE = join_path(RAW_COMMIT_DATA_DIR, "VFC.jsonl")
     else:
