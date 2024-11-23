@@ -5,7 +5,7 @@ FROM python:3.7-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y tar unzip git wget libarchive13 libcurl4 libxml2\
+RUN apt-get update && apt-get install -y tar unzip git wget libarchive13 libcurl4 libxml2 gawk\
     && rm -rf /var/lib/apt/lists/*
 
 # # Set Python 3.7 as the default Python version

@@ -14,7 +14,7 @@ RAW_COMMIT_DATA_DIR = join_path(BASE_DATA_DIR, "vul_commit_database")
 mkdir_if_not_exist(RAW_COMMIT_DATA_DIR)
 
 if DEBUG:
-    FIXING_COMMIT_FILE_NAME = "VFC.jsonl"
+    FIXING_COMMIT_FILE_NAME = "test.jsonl"
 else:
     FIXING_COMMIT_FILE_NAME = "filtered_c_lang__fixing_commits.csv"
 

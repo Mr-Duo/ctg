@@ -9,7 +9,7 @@ from file_manager import is_path_exist, join_path, mkdir_if_not_exist, unlink
 from pyszz.ctg.generate_ctg import generate_ctg
 from pyszz.ctg.utils import *
 
-CSV_PATH = "data/jit_vul_dataset/vul_clean_commit_data_function_level.csv"
+# CSV_PATH = "data/extracted_output/project/FFmpeg_function_vtc.csv"
 #CSV_PATH = "data/jit_vul_dataset/vul_triggering_commit_data_function_level.csv"
 #CSV_PATH = "data/jit_vul_dataset/vtc_old.csv"
 NUMBER_THREAD = 64
@@ -37,12 +37,11 @@ def gen_ctg(cm_id, idx):
         threads.clear()
 
 
-def main():
-    # read file csv
+def main():    
     datax = pd.read_csv(CSV_PATH, low_memory=False)
     print(datax.shape)
-    code_before = 'before'
-    code_after = 'after'
+    code_before = 'function_before'
+    code_after = 'function_after'
     data = datax[datax[code_before].notna()]
     data = data[data[code_after].notna()]
     print(data.shape)
@@ -152,8 +151,8 @@ def unlink_cpg(cm_id, idx):
 def ctg_to_csv(file):
     datax = pd.read_csv(CSV_PATH, low_memory=False)
     print(datax.shape)
-    code_before = 'before'
-    code_after = 'after'
+    code_before = 'function_before'
+    code_after = 'function_after'
     data = datax[datax[code_before].notna()]
     data = data[data[code_after].notna()]
     print(data.shape)
@@ -176,6 +175,7 @@ def ctg_to_csv(file):
         tmp_n_list = list()
         tmp_e_list = list()
         tmp_bl_list = list()
+        bl_path = ""
         for idx, row in rows.iterrows():
             edges_path = join_path(base_path, f"ctg.{idx}.cpp.edges.json")
             nodes_path = join_path(base_path, f"ctg.{idx}.cpp.nodes.json")
@@ -331,7 +331,18 @@ def slice_ctg(csv_path):
 
 
 if __name__ == "__main__":
+    # read file csv
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--begin", type=int)
+    parser.add_argument("--end", type=int)
+    parser.add_argument("--file", type=str)
+    parser.add_argument("--project", type=str)
+    p = parser.parse_args()
+    
+    CSV_PATH = f"data/extracted_output/project/{p.project}_function_{p.file}.csv"
+    
     main()
     #slice_ctg('ctg_data/test.csv')
     # extract_ctg()
-    ctg_to_csv("fc_ctg.csv")
+    ctg_to_csv(f"{p.file}_ctg.csv")

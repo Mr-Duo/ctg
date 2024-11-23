@@ -6,8 +6,8 @@ from joern.joern_parser import run_joern_text
 from config import JOERN_PARSED_FUNCTIONS_OUTPUTS_DIR
 
 
-CSV_PATH = "data/jit_vul_dataset/vul_triggering_commit_data_function_level.csv"
-CSV_PATH = "data/jit_vul_dataset/vul_clean_commit_data_function_level.csv"
+# CSV_PATH = "data/extracted_output/project/FFmpeg_function_vtc.csv"
+#CSV_PATH = "data/jit_vul_dataset/vul_clean_commit_data_function_level.csv"
 
 NUMBER_THREAD = 2
 REFACTOR = False
@@ -37,10 +37,20 @@ def refector_text(text):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--begin", type=int)
+    parser.add_argument("--end", type=int)
+    parser.add_argument("--file", type=str)
+    parser.add_argument("--project", type=str)
+    p = parser.parse_args()
+    
+    CSV_PATH = f"data/extracted_output/project/{p.project}_function_{p.file}.csv"
+    
     datax = pd.read_csv(CSV_PATH, low_memory=False)
     print(datax.shape)
-    code_before = 'before'
-    code_after = 'after'
+    code_before = 'function_before'
+    code_after = 'function_after'
     data = datax[datax[code_before].notna()]
     data = data[data[code_after].notna()]
     print(data.shape)
@@ -66,12 +76,12 @@ def main():
             after_output_file_name = f"after.{idx}"
             before = row[code_before]
             after = row[code_after]
-            if 'line_bl' in row: 
-                bl =  row['line_bl']
-                if isinstance(bl,str):
-                    bl_path = join_path(output_file_dir,f"blame.{idx}.txt")
-                    if not is_path_exist(bl_path):
-                        write_file(bl_path,bl)
+            # if 'line_bl' in row: 
+            #     bl =  row['line_bl']
+            #     if isinstance(bl,str):
+            #         bl_path = join_path(output_file_dir,f"blame.{idx}.txt")
+            #         if not is_path_exist(bl_path):
+            #             write_file(bl_path,bl)
             if is_path_exist(join_path(output_file_dir,f"{after_output_file_name}.cpp.edges.json")):
                 continue
             if REFACTOR:
@@ -98,12 +108,12 @@ def main():
             c += 1
             before_output_file_name = f"before.{idx}"
             after_output_file_name = f"after.{idx}"
-            if 'line_bl' in row: 
-                bl =  row['line_bl']
-                if isinstance(bl,str):
-                    bl_path = join_path(output_file_dir,f"blame.{idx}.txt")
-                    if not is_path_exist(bl_path):
-                        write_file(bl_path,bl)
+            # if 'line_bl' in row: 
+            #     bl =  row['line_bl']
+            #     if isinstance(bl,str):
+            #         bl_path = join_path(output_file_dir,f"blame.{idx}.txt")
+            #         if not is_path_exist(bl_path):
+            #             write_file(bl_path,bl)
             if REFACTOR:
                 before = refector_text(before)
                 after = refector_text(after)

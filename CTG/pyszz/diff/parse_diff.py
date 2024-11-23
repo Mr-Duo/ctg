@@ -30,7 +30,7 @@ def parse_diff(commit, idx):
         logger.error(
             f"Can't get diff betwen berfor and after: commit: {commit}, idx={idx}, file={diff_path}")
         return
-    soup = BeautifulSoup(content)
+    soup = BeautifulSoup(content, features="html.parser")
     pre_tag = soup.find("pre")
     if pre_tag is None:
         logger.error(

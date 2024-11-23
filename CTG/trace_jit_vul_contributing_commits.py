@@ -12,21 +12,20 @@ logger = get_logger(__name__)
 
 
 def main():
-    df = pd.read_csv(FIXING_COMMIT_FILE_PATH)
-    grouped_commits_by_repo = df.groupby("project")["commit_id"].apply(list)
+    df = pd.read_json(FIXING_COMMIT_FILE_PATH, lines=True)
+    commit_ids = df["commit_id"].to_list()[p.begin:p.end]
     out_file_path = f"{JIT_VUL_CONTRIBUTING_DATA_FILE_PATH}.{get_current_timestamp()}"
     with open(out_file_path, "w") as out_f:
-        for repo_name, commit_ids in grouped_commits_by_repo.iteritems():
-            repo_dir = get_cloned_repository(repo_name)
-            # try:
-            #     lock_dir(repo_dir)
-            # except BlockingIOError as e:
-            #     pass  # continue
+        repo_dir = get_cloned_repository("FFmpeg")
+        # try:
+        #     lock_dir(repo_dir)
+        # except BlockingIOError as e:
+        #     pass  # continue
 
-            if repo_name == "chromium___chromium":
-                continue
+        if repo_name == "chromium___chromium":
+            continue
 
-            run_szz(repo_dir, commit_ids, out_file=out_f)
+        run_szz(repo_dir, commit_ids, out_file=out_f)
             # break
     logger.info(f"Wrote vulnerability-contributing commit trace results "
                 f"to file [{get_file_name_with_parent(out_file_path)}]")

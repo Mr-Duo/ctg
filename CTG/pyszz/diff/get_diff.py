@@ -13,10 +13,10 @@ def get_diff_file(commit, idx):
     b_path = join_path(path, f"before.{idx}.cpp")
     a_path = join_path(path, f"after.{idx}.cpp")
     o_path = join_path(path, f"diff.{idx}.html")
-    if is_path_exist(o_path):
-        return o_path
+    # if is_path_exist(o_path):
+    #     return o_path
 
-    cmd = f"git diff --no-index --word-diff=color -U0 {b_path} {a_path} | {get_absolute_path(SCRIPT_PATH)} > {o_path}"
+    cmd = f"git diff --no-index --word-diff=color -U0 {b_path} {a_path} | bash {get_absolute_path(SCRIPT_PATH)} > {o_path}"
     print(f"Get diff {commit}")
     rs = subprocess_cmd(cmd)
     if len(rs[1]) == 0:

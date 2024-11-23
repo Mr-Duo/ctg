@@ -1,7 +1,7 @@
 import pandas as pd
 from pydriller import Git as PyDrillerGitRepo, ModifiedFile, Commit
 
-from config import FIXING_COMMIT_FILE_PATH, C_FILE_EXTENSIONS, REPOSITORY_COMMITS_DIR, \
+from config import RAW_COMMIT_DATA_DIR, FIXING_COMMIT_FILE_PATH, C_FILE_EXTENSIONS, REPOSITORY_COMMITS_DIR, \
     REPOSITORY_DATA_FOLDER_NAME, DIFF_OUTPUTS_FOLDER_NAME, JOERN_PARSED_OUTPUTS_FOLDER_NAME, \
     DEPENDENCY_OUTPUTS_FOLDER_NAME, DEPENDENCY__OUTPUTS_DIR, MAPPING_FILE_EXT, DEPENDENCY_FILE_EXT
 from file_manager import get_file_name, get_cloned_repository, write_file, join_path, get_outer_dir, is_path_exist, \
@@ -19,18 +19,28 @@ logger = get_logger(__name__)
 
 def main():
     # df = pd.read_csv(FIXING_COMMIT_FILE_PATH)
-    df = pd.read_json(FIXING_COMMIT_FILE_PATH, lines=True)
+    
     # grouped_commits_by_repo = df["commit_id"].apply(list)
     # for project_name, commit_ids in grouped_commits_by_repo.iteritems():
-    commit_ids = df["commit_id"].to_list()    
-    repo_dir = get_cloned_repository("FFmpeg")
     import argparse
     parser = argparse.ArgumentParser()
     parser.add_argument("--begin", type=int)
     parser.add_argument("--end", type=int)
+    parser.add_argument("--file", type=str)
+    parser.add_argument("--project", type=str)
     p = parser.parse_args()
     
-    commit_ids = commit_ids[p.begin:p.end]
+    if p.file == "vtc":
+        FILE = join_path(RAW_COMMIT_DATA_DIR, "VTC.jsonl")
+    elif p.file == "vfc":
+        FILE = join_path(RAW_COMMIT_DATA_DIR, "VFC.jsonl")
+    else:
+        FILE = join_path(RAW_COMMIT_DATA_DIR, "non_VIC.jsonl")
+        
+    df = pd.read_json(FILE, lines=True)
+    commit_ids = df["commit_id"].to_list()[p.begin:p.end]   
+    repo_dir = get_cloned_repository(p.project)
+
     # try:
     #     lock_dir(repo_dir)
     # except BlockingIOError as e:
