@@ -172,8 +172,8 @@ def get_commit_data(repo_dir, commit_id, extract_level="function", fx_id = None 
         #         grouped_commits_by_repo[repo_name][vtc_id] = (fx_id,blames_vtc)
         #     print("Re get data:" +vtc_id)
         #     return get_commit_data(repo_dir, vtc_id, extract_level,fx_id,grouped_commits_by_repo[repo_name][vtc_id][1])
-    
-    ce = CommitExtractor(repo_dir=repo_dir, commit_id=commit_id)
+        
+    ce = CommitExtractor(repo_dir=repo_dir, commit_id=commit_id)    
     commit_infos = list()
     count = 0
     # check = False

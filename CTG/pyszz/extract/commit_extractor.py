@@ -16,9 +16,9 @@ class CommitExtractor():
             self._repository_dir, single=self.commit_id)
         self.commit = next(self._pydriller_repo.traverse_commits())
         self.modifies = list()
-        if len(self.commit.modified_files) >= MAX_CHANGE:
-            self.modifies = self.commit.modified_files
-            return
+        # if len(self.commit.modified_files) >= MAX_CHANGE:
+        #     self.modifies = self.commit.modified_files
+        #     return
         for modified in self.commit.modified_files:
             ext = modified.filename.rsplit('.', 1)
             if len(ext) < 2 or (len(ext) > 1 and ext[1] not in C_FILE_EXTENSIONS):
