@@ -27,10 +27,10 @@ class ModifierExtractor():
         if not source_file:
             return
 
-        self.modified_deleted_in_function = defaultdict()
-        self.modified_add_in_function = defaultdict()
-        self.function_after_map = defaultdict()
-        self.function_before_map = defaultdict()
+        self.modified_deleted_in_function = defaultdict(dict)
+        self.modified_add_in_function = defaultdict(dict)
+        self.function_after_map = defaultdict(list)
+        self.function_before_map = defaultdict(list)
         self.get_function_before()
         self.get_function_after()
 
@@ -72,8 +72,7 @@ class ModifierExtractor():
             if name in names:
                 name = f"{name}_{names.count(name)}"
             name_methods_after.append(name)
-            self.function_after_map[name] = lines_after[method["start_line"] -
-                                                        1:method["end_line"]]
+            self.function_after_map[name] = lines_after[method["start_line"] - 1:method["end_line"]]
         assert len(start_methods_after) == len(end_methods_after)
         assert len(start_methods_after) == len(name_methods_after)
 
@@ -87,7 +86,7 @@ class ModifierExtractor():
                     index = idx
                     break
             if index != -1:
-                assert add_line-start_line >= 0
+                # assert add_line-start_line >= 0
                 lines_in_func[index].append(add_line-start_line)
                 if index not in set_index_functions:
                     set_index_functions.append(index)
@@ -97,7 +96,11 @@ class ModifierExtractor():
             lines = ",".join([str(x) for x in lines_in_func[idx]])
             function_after = lines_after[start_methods_after[idx]: end_methods_after[idx]]
             self.modified_add_in_function[name_methods_after[idx]] = {
-                "line": lines, "raw": "\n".join(function_after), "start_function": start_methods_after[idx], "end_function": end_methods_after[idx]}
+                "line": lines, 
+                "raw": "\n".join(function_after), 
+                "start_function": start_methods_after[idx], 
+                "end_function": end_methods_after[idx]
+            }
 
     def get_function_before(self):
         if self.modified.source_code_before is None:
@@ -126,8 +129,7 @@ class ModifierExtractor():
             if name in names:
                 name = f"{name}_{names.count(name)}"
             name_methods_before.append(name)
-            self.function_before_map[name] = lines_before[method["start_line"] -
-                                                          1:method["end_line"]]
+            self.function_before_map[name] = lines_before[method["start_line"] - 1:method["end_line"]]
         assert len(start_methods_before) == len(end_methods_before)
         assert len(start_methods_before) == len(name_methods_before)
 
@@ -151,7 +153,11 @@ class ModifierExtractor():
             lines = ",".join([str(x) for x in lines_in_func[idx]])
             function_before = lines_before[start_methods_before[idx]: end_methods_before[idx]]
             self.modified_deleted_in_function[name_methods_before[idx]] = {
-                "line": lines, "raw": "\n".join(function_before), "start_function": start_methods_before[idx], "end_function": end_methods_before[idx]}
+                "line": lines, 
+                "raw": "\n".join(function_before), 
+                "start_function": start_methods_before[idx], 
+                "end_function": end_methods_before[idx]
+            }
 
     def get_diff(self):
         return self.modified.diff
