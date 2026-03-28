@@ -197,7 +197,7 @@ def get_commit_data(repo_dir, commit_id, extract_level="function", fx_id = None 
             if func in me.modified_add_in_function:
                 func_after_info = me.modified_add_in_function[func]
                 added = func_after_info["line"]
-                added_line = [int(float(el)) for el in added.split(",")]
+                # added_line = [int(float(el)) for el in added.split(",")]
                 function_after = func_after_info["raw"]
                 start_at = func_after_info["start_function"]
                 end_at = func_after_info["end_function"]

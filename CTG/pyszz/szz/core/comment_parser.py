@@ -149,24 +149,35 @@ def parse_comments_text(file_name,text):
     line_comment_ranges = list()
     file_path =  join_path(SOURCE_CODE_OUTPUTS_DIR, file_name)
     source_file_path = write_file(file_path,text,True)
-    file_path_srcml = f"{source_file_path}.xml"
+    # file_path_srcml = f"{source_file_path}.xml"
     line_comment_ranges = list()
+    
+    pattern = re.compile(
+        r'<comment\b[^>]*pos:start="(?P<start>\d+):\d+"[^>]*pos:end="(?P<end>\d+):\d+"'
+    )
 
     if any(source_file_path.endswith(e) for e in C_FILE_EXTENSIONS):
-        if is_path_exist(file_path_srcml):
-            with open(file_path_srcml) as f:
-                stdout = f.read()
-                stderr = ''
-        else:
-            stdout, stderr = subprocess_cmd(f'srcml --position {source_file_path}')
-            if not stderr:
-                write_file(file_path_srcml,stdout)
+        # if is_path_exist(file_path_srcml):
+        #     with open(file_path_srcml) as f:
+        #         stdout = f.read()
+        #         stderr = ''
+        # else:
+        #     stdout, stderr = subprocess_cmd(f'srcml --position {source_file_path}')
+        #     if not stderr:
+        #         write_file(file_path_srcml,stdout)
+        # if not stderr:
+        stdout, stderr = subprocess_cmd(f'srcml --position {source_file_path}')
         if not stderr:
-            stdout, stderr = subprocess_cmd(f'srcml --position {source_file_path}')
-            for i, line in enumerate(stdout.splitlines()):
-                if i == 1 and "<comment " in line.strip() or line.strip().startswith("<comment "):
-                    line_comment_ranges.append(CommentRange(start=int(re.search('pos:start="(\d+):', line).groups()[0]),
-                                                            end=int(re.search('pos:end="(\d+):', line).groups()[0])))
+            # for i, line in enumerate(stdout.splitlines()):
+            #     if i == 1 and "<comment " in line.strip() or line.strip().startswith("<comment "):
+            #         line_comment_ranges.append(CommentRange(start=int(re.search('pos:start="(\d+):', line).groups()[0]),
+            #                                                 end=int(re.search('pos:end="(\d+):', line).groups()[0])))
+            for line in stdout.splitlines():
+                match = pattern.search(line)
+                if match:
+                    start = int(match.group("start"))
+                    end = int(match.group("end"))
+                    line_comment_ranges.append(CommentRange(start=start, end=end))
         else:
             log.warning(f"Error while parsing file {source_file_path}")
     else:

@@ -11,40 +11,42 @@ class ModifierExtractor():
         self.modified = modified
         if modified.nloc is None or modified.nloc > 10000:
             return
-        self.diff = self.get_diff()
+        self.diff = self.modified.diff
         self.old_path = self.modified.old_path
         self.new_path = self.modified.new_path
         self.source_file = source_file
-        self.raw_code_before = self.get_raw_code_before()
-        self.raw_code_after = self.get_raw_code_after()
+        self.raw_code_before = self.modified.source_code_before
+        self.raw_code_after = self.modified.source_code
         self.commit_id = commit_id
         self.comments_after = parse_comments_text(f"{commit_id}_after_{self.modified.filename}".replace(" ", ""), self.raw_code_after)
         self.comments_before = parse_comments_text(f"{commit_id}_before_{self.modified.filename}".replace(" ", ""), self.raw_code_before)
-
-        self.modified_added = [el[0] for el in self.modified.diff_parsed["added"] if self.filter_comment(el[0], self.comments_after) and len(el[1].strip()) > 0]
-        self.modified_deleted = [el[0] for el in self.modified.diff_parsed["deleted"] if self.filter_comment(el[0], self.comments_before) and len(el[1].strip()) > 0]
-
-        if not source_file:
-            return
-
+        
         self.modified_deleted_in_function = defaultdict(dict)
         self.modified_add_in_function = defaultdict(dict)
         self.function_after_map = defaultdict(list)
         self.function_before_map = defaultdict(list)
-        self.get_function_before()
-        self.get_function_after()
+        
+        self.modified_added = [
+            el[0] 
+            for el in self.modified.diff_parsed["added"] 
+            if self.filter_comment(el[0], self.comments_after) and len(el[1].strip()) > 0
+        ]
+        
+        self.modified_deleted = [
+            el[0] 
+            for el in self.modified.diff_parsed["deleted"] 
+            if self.filter_comment(el[0], self.comments_before) and len(el[1].strip()) > 0
+        ]
+
+        if source_file:
+            self.get_function_before()
+            self.get_function_after()
 
     def filter_comment(self, line_num, comment_ranges):
         for comment_range in comment_ranges:
             if comment_range.start <= line_num <= comment_range.end:
                 return False
         return True
-
-    def get_raw_code_before(self):
-        return self.modified.source_code_before
-
-    def get_raw_code_after(self):
-        return self.modified.source_code
 
     def get_function_after(self):
         if self.modified.source_code is None:
@@ -56,13 +58,18 @@ class ModifierExtractor():
         lines_in_func = defaultdict(lambda: list())
         list_funcs = list()
         # check faild of pydriller
-        if self.checkParser(self.modified.methods, lines_after) or False:
+        if self.checkParser(self.modified.methods, lines_after):
             list_funcs = parse_functions_content(
-                f"{self.commit_id}_after_{self.modified.filename}".replace(" ", ""), self.modified.source_code)
+                f"{self.commit_id}_after_{self.modified.filename}".replace(" ", ""), 
+                self.modified.source_code
+            )
         else:
             for method in self.modified.methods:
-                list_funcs.append(
-                    {"name": method.name, "start_line": method.start_line, "end_line": method.end_line})
+                list_funcs.append({
+                    "name": method.name, 
+                    "start_line": method.start_line, 
+                    "end_line": method.end_line
+                })
         names = list()
         for method in list_funcs:
             start_methods_after.append(method["start_line"]-1)
@@ -105,6 +112,7 @@ class ModifierExtractor():
     def get_function_before(self):
         if self.modified.source_code_before is None:
             return []
+        
         lines_before = self.modified.source_code_before.splitlines()
         start_methods_before = []
         end_methods_before = []
@@ -112,13 +120,19 @@ class ModifierExtractor():
         lines_in_func = defaultdict(lambda: list())
         ext = self.modified.filename.rsplit('.', 1)
         list_funcs = list()
-        if self.checkParser(self.modified.methods_before, lines_before) or False:
-            list_funcs = parse_functions_content(f"{self.commit_id}_before_{self.modified.filename}".replace(
-                " ", ""), self.modified.source_code_before)
+        
+        if self.checkParser(self.modified.methods_before, lines_before):
+            list_funcs = parse_functions_content(
+                f"{self.commit_id}_before_{self.modified.filename}".replace(" ", ""), 
+                self.modified.source_code_before
+            )
         else:
             for method in self.modified.methods_before:
-                list_funcs.append(
-                    {"name": method.name, "start_line": method.start_line, "end_line": method.end_line})
+                list_funcs.append({
+                    "name": method.name, 
+                    "start_line": method.start_line, 
+                    "end_line": method.end_line
+                })
 
         names = list()
         for method in list_funcs:
@@ -158,9 +172,6 @@ class ModifierExtractor():
                 "start_function": start_methods_before[idx], 
                 "end_function": end_methods_before[idx]
             }
-
-    def get_diff(self):
-        return self.modified.diff
 
     def checkParser(self, methods, source_lines):
         if len(methods) <= 0:
