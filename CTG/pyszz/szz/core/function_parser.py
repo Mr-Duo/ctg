@@ -1,5 +1,5 @@
 import logging as log
-from typing import Optional
+from typing import Optional, Tuple, List
 import re
 from collections import namedtuple
 
@@ -141,7 +141,7 @@ def _extract_line_number(pattern: str, text: str) -> Optional[int]:
     return int(match.group(1)) if match else None
 
 
-def _resolve_macro_bounds(outlines: list[str], i: int) -> tuple[int, int]:
+def _resolve_macro_bounds(outlines: List[str], i: int) -> Tuple[int, int]:
     """
     Determine start/end lines for macro declarations that may span
     multiple XML lines before their associated block.
@@ -185,7 +185,7 @@ def _resolve_macro_bounds(outlines: list[str], i: int) -> tuple[int, int]:
     return start, end
 
 
-def _resolve_line_bounds(line: str, outlines: list[str], i: int) -> tuple[int, int]:
+def _resolve_line_bounds(line: str, outlines: List[str], i: int) -> Tuple[int, int]:
     """Dispatch to the correct line-bound extraction strategy for a given XML line."""
     if line.startswith("<macro "):
         return _resolve_macro_bounds(outlines, i)
@@ -219,10 +219,10 @@ def _is_function_line(line: str) -> bool:
 
 def _extract_function_name(
     line: str,
-    outlines: list[str],
+    outlines: List[str],
     i: int,
     start: int,
-    stdout_lines: list[str],
+    stdout_lines: List[str],
 ) -> Optional[str]:
     """
     Reconstruct a snippet of source around the declaration start and
@@ -265,7 +265,7 @@ def _extract_function_name(
     return "".join(name_parts) or None
 
 
-def _get_srcml_output(source_file_path: str) -> tuple[str, str]:
+def _get_srcml_output(source_file_path: str) -> Tuple[str, str]:
     """Return (stdout, stderr) for srcML, using a cached .xml file if available."""
     cached_path = f"{source_file_path}.xml"
     if is_path_exist(cached_path):
@@ -282,7 +282,7 @@ def _strip_xml_declaration(stdout: str) -> str:
     return stdout[stdout.index(">") + 1:]
 
 
-def parse_functions_srcml(source_file_path: str) -> list[dict]:
+def parse_functions_srcml(source_file_path: str) -> List[dict]:
     """
     Parse a C/C++ source file using srcML and return a list of
     function-like declarations with their name and line range.
@@ -310,7 +310,7 @@ def parse_functions_srcml(source_file_path: str) -> list[dict]:
         write_file(cached_path, stdout, True)
 
     outlines = stdout.splitlines()
-    list_functions: list[dict] = []
+    list_functions: List[dict] = []
 
     for i, line in enumerate(outlines):
         # Normalize indented lines to start at their first XML tag
